@@ -1,0 +1,76 @@
+---
+title: "Visualization I"
+author: "Sofia Sikandar"
+date: "February 5th, 2017"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Load library first:
+```{r}
+library(ggplot2)
+```
+
+Use the dataset mpg:
+```{r}
+mpg
+```
+####Examine the relationship between Engine Size(displ) and City Milage(cty):
+#Before you see the two scatterplots below, think about which one is more informative. 
+Here is the first scatterplot, which is a visualization of the relationship between engine size and city mileage:
+```{r}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = cty, color = "red"))
+```
+
+Now, here is a scatterplot which distinguishes cars with different numbers of cylinders using different colors: 
+```{r}
+ggplot(data = mpg) + geom_point(mapping = aes(x = cyl, y= cty, color = class))
+```
+#From the two scatterplots above, which graphic is more informative? To me, it seems that the second graphic is, which is the scatterplot that visualizes cars with different numbers of cylinders. 
+
+####Add facets:
+```{r}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = cty)) +
+  facet_wrap(~ class)
+```
+
+```{r}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = cty)) +
+  facet_grid(drv ~ class)
+```
+
+####Add More Layers:
+The scatterplot below adds a smooth line that shows the relationship between engine size and city mileage: 
+```{r}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = cty,color=class)) +
+  geom_smooth(mapping = aes(x = displ, y = cty))
+```
+
+The scatterplot below makes the smooth line that shows the relationship between engine size and city milage thicker. Here, I also explore other aesthetic attributes, such as changing the color of the smoothline: 
+```{r}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = cty, color=class)) +
+  geom_smooth(mapping = aes(x = displ, y = cty), color = "red", size = 6)
+```
+
+The scatterplot below shows a group of seperate, smooth lines, based on the number of cylinders: 
+```{r}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = cty, color=class)) +
+  geom_smooth(mapping = aes(x = displ, y = cty, group = cyl))
+```
+
+The scatterplot below further adds a straightline to the plot and shows the smooth straightline using the color red: 
+```{r}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = cty, color=class)) +
+  geom_smooth(mapping = aes(x = displ, y = cty), method = "lm", color = "red", se = FALSE)
+```
+
