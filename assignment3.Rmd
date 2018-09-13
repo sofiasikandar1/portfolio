@@ -1,0 +1,343 @@
+---
+title: "Assignment3"
+author: "Sofia Sikandar"
+date: "March 21, 2017"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Load libraries:
+```{r}
+library(tidyr)
+library(magrittr)
+library(tidyverse)
+```
+
+
+###import data first:
+
+```{r}
+data2015 <- read_csv("2015.csv")
+data2017 <- read_csv("2017.csv")
+```
+
+```{r}
+data2015
+data2017
+```
+
+### Data wrangling (get data ready for analysis):
+
+####pick useful variables
+```{r}
+names(data2015)
+subdata2015 <- select(data2015,Country, Region, "Happiness Rank","Happiness Score" )
+subdata2015
+```
+
+```{r}
+names(data2017)
+subdata2017 <- select(data2017,Country,"Happiness.Rank","Happiness.Score" )
+subdata2017
+```
+
+```{r}
+(join1517 <- full_join(subdata2015,subdata2017, by = 'Country'))
+
+```
+
+
+####rename variables to be more meanful
+```{r}
+
+mapnames <- c("Happiness Rank" = "Rank2015", "Happiness Score" = "Score2015","Happiness.Rank" = "Rank2017", "Happiness.Score" = "Score2017")
+
+(renamed <- plyr::rename(join1517, mapnames))
+
+```
+
+####examine NAs
+```{r}
+filter(renamed, is.na(Region))
+```
+
+```{r}
+filter(renamed, is.na(Score2015))
+```
+```{r}
+filter(renamed, is.na(Score2017))
+```
+
+####Fix some NAs
+```{r}
+renamed$Score2017[renamed$Country=="Taiwan"] <- renamed$Score2017[renamed$Country=="Taiwan Province of China"]
+renamed$Rank2017[renamed$Country=="Taiwan"] <- renamed$Rank2017[renamed$Country=="Taiwan Province of China"]
+
+renamed$Score2017[renamed$Country=="Hong Kong"] <- renamed$Score2017[renamed$Country=="Hong Kong S.A.R., China"]
+renamed$Rank2017[renamed$Country=="Hong Kong"] <- renamed$Rank2017[renamed$Country=="Hong Kong S.A.R., China"]
+
+renamed$Region[renamed$Country=="Belize"] <- "Latin America and Caribbean"
+renamed$Region[renamed$Country=="Somalia"] <- "Sub-Saharan Africa"
+renamed$Region[renamed$Country=="Namibia"] <- "Sub-Saharan Africa"
+renamed$Region[renamed$Country=="South Sudan"] <- "Sub-Saharan Africa"
+  
+(happydata <- filter(renamed,
+                renamed$Country !="Taiwan Province of China" & renamed$Country !="Hong Kong S.A.R., China"))
+
+```
+
+####re-examine NAs
+```{r}
+filter(happydata, is.na(Region))
+summary(as.factor(happydata$Region))
+filter(happydata, is.na(Score2015))
+filter(happydata, is.na(Score2017))
+```
+
+hint: Use 2017 data to examine the current situation.
+###Question 1:	How does happiness vary across different countries and regions? 
+####a. distribution, mean, median, range of the happiness score
+The distribution is modeled by the historgram. The mean, median, and range are given by the summary of the dataset. 
+```{r}
+ggplot(data2017, mapping = aes(x = Happiness.Score)) + geom_histogram(binwidth = 0.2) 
+summary(data2017)
+```
+
+Descending
+```{r}
+data2017
+happiness_score_year <- data2017 %>%
+  select(Country, Happiness.Rank) %>%
+  arrange(desc(Happiness.Rank)) %>%
+  top_n(10)
+happiness_score_year
+  
+
+```
+
+Ascending 
+```{r}
+data2017
+happiness_score_year <- data2017 %>%
+  select(Country, Happiness.Rank) %>%
+  arrange((Happiness.Rank)) %>%
+  top_n(10)
+happiness_score_year
+  
+
+```
+
+
+
+####c. Regional differences
+
+```{r}
+difference_by_region <- happydata %>%
+  group_by(Region) %>%
+  summarize(avg_happiness_ranking = mean(Rank2017)) %>%
+  mutate(Rank2017 = NULL)
+difference_by_region
+  
+```
+
+###Question 2:	How happiness has changed over time? 
+####a. Distribution of change in the happiness score, and its mean, median, and range. hint: Use 2015 and 2017 data to examine changes in the happiness score.
+
+first need to create a new variable:
+```{r}
+chdata1517<- mutate (happydata, Chscore1517 = Score2017 - Score2015)
+ggplot(chdata1517, mapping = aes(x = Chscore1517)) + geom_histogram(binwidth = 0.3) 
+summary(chdata1517)
+```
+
+####b. How many countries improved? How many countries declined? 
+
+```{r}
+decline <- chdata1517 %>%
+  group_by(Country) %>%
+  select(Country, Score2015, Score2017) %>%
+  mutate(difference_in_improvement = Score2017 - Score2015) %>%
+  filter(difference_in_improvement < 0) %>%
+  summarize(count = n()) %>%
+  mutate(total_countries_declined = sum(count))%>%
+  mutate(count = NULL)
+decline
+```
+
+```{r}
+improvement <- chdata1517 %>%
+  group_by(Country) %>%
+  select(Country, Score2015, Score2017) %>%
+  mutate(difference_in_improvement = Score2017 - Score2015) %>%
+  filter(difference_in_improvement > 0) %>%
+  summarize(count = n()) %>%
+  mutate(total_countries_improved = sum(count)) %>%
+  mutate(count = NULL)
+improvement
+```
+
+
+####c. Which countries became significantly worse? Why? Hint: may need to do a bit reading and cite the sources.
+
+```{r}
+decline <- chdata1517 %>%
+  group_by(Country) %>%
+  select(Country, Score2015, Score2017) %>%
+  mutate(difference_in_decline = Score2017 - Score2015) %>%
+  filter(difference_in_decline < 0) %>%
+  arrange(difference_in_decline)
+  
+  
+decline
+```
+
+
+
+
+###Question 3.	Which variables are correlated with (may explain) country-level happiness? 
+
+####a. examine covariation with GDP per capita
+
+import gdp data first:
+```{r}
+
+gdp <- read_csv("gdp_per_thousand.csv")
+
+(joingdp <- full_join(chdata1517, gdp, by = 'Country'))
+
+
+```
+
+```{r}
+happiness_vs_gdp <- joingdp %>%
+  select(Country, Score2017, gdp) %>%
+  group_by(Country, Score2017,gdp ) %>%
+  mutate(Date = NULL) 
+happiness_vs_gdp
+
+ggplot(happiness_vs_gdp) +
+  geom_point(mapping = aes(x = Score2017, y = gdp)) +
+  geom_smooth(mapping = aes(x = Score2017, y = gdp)) + ylim(-1, 150)
+
+```
+
+```{r}
+happiness_vs_gdp <- joingdp %>%
+  select(Country, Score2015, gdp) %>%
+  group_by(Country, Score2015,gdp ) %>%
+  mutate(Date = NULL) 
+happiness_vs_gdp
+
+ggplot(happiness_vs_gdp) +
+  geom_point(mapping = aes(x = Score2015, y = gdp)) +
+  geom_smooth(mapping = aes(x = Score2015, y = gdp)) + ylim(-1,150)
+```
+
+examine NAs:
+```{r}
+
+filter(joingdp, is.na(Score2015))
+
+```
+
+```{r}
+
+filter(joingdp, is.na(gdp))
+
+```
+
+prepare data for examining relationship between happiness score and gdp:
+```{r}
+
+gdpdata <- 
+  joingdp %>%
+    select(Country,Score2015, Rank2015,gdp) %>%
+    filter(!is.na(Score2015) & !is.na(gdp))
+```
+
+```{r}
+gdpdata
+```
+
+examine relationship between happiness score and gdp:
+
+####b. covariation with cost of living
+```{r}
+costliving <- read_csv("Consumer prices.csv")
+(joingdp_1 <- full_join(chdata1517, costliving , by = 'Country'))
+joingdp_1
+```
+
+
+```{r}
+Amount_INT <- as.integer(joingdp_1$Amount, na.rm = FALSE) 
+happiness_vs_cost_of_living <- joingdp_1 %>%
+  select(Country,Score2017, Score2015, Amount) %>%
+  group_by(Country, Score2017) 
+happiness_vs_cost_of_living
+
+ggplot(happiness_vs_cost_of_living) +
+  geom_point(mapping = aes(x = Score2017, y = Amount_INT)) + ylim(0.1,-0.1) 
+
+ggplot(happiness_vs_cost_of_living) +
+  geom_point(mapping = aes(x = Score2015, y = Amount_INT)) 
+```
+
+
+####c. covariation with crime levels
+
+```{r}
+crimerates <- read_csv("Crime_levels.csv")
+(joingdp_1 <- full_join(chdata1517, crimerates))
+```
+
+```{r}
+crime_INT <-  as.integer(joingdp_1$Crimelevel, na.rm = FALSE) 
+happiness_vs_crimerates <- joingdp_1 %>%
+  select(Country,Score2017, Score2015, Crimelevel) %>%
+  group_by(Country, Crimelevel ) %>%
+  mutate(Date = NULL) 
+happiness_vs_crimerates
+
+ggplot(happiness_vs_crimerates) +
+  geom_point(mapping = aes(x = Score2015, y = Crimelevel)) +
+  geom_smooth(mapping = aes(x = Score2015, y = Crimelevel))
+```
+
+
+
+examine NAs 
+```{r}
+filter(crimerates, is.na(Crimelevel))
+filter(crimerates, is.na(Country))
+```
+
+
+####Following the above exploratory analysis, reflect on the effects of the variables: 
+
+a.	How well do the variables explain happiness? 
+The data represents explains quite well. The happiness score is observed over two years, and then relationships between happiness score and different variables are observed, i.e crime levels, cost of living, and gdp. 
+
+b.	Why do they explain well or poorly? 	
+They are represented well because the variables and data are thorough, complex, and analytical. 
+
+c.	What other variables might better explain happiness? Why?  
+Other variables such as birth rate could have explained levels of happiness. A baby boom during a certain time period can significantly boost or heavily decrease happiness score. 
+
+###A summary of what you have learned from this exploratory analysis: 
+  
+(i)	List major insights from this analysis
+The happiness score between 2015 and 2017 did not vary signficantly among countries. 
+Some countries improved slightly or signficantly decreased in happiness score.
+
+
+(ii) Briefly discuss limitations of the analysis
+The limitations of the analysis is within the data. The data is not the most recent. There is data from 2015 and 2017. The data from 2016 is missing, so if there is a big difference in the significant data such as happiness score or rank it would be hard to explain. This also makes it difficult to explain or identify any fluctations. 
+
+(iii)	Briefly discuss what additional data and analysis may be needed
+It would help to have data from 2016 so that if there are any fluctations in happiness score or rank, it can clearly be shown. The happiness score fluctations can clearly be represented by the three covariations we observed, such as crime level, cost of living, and gdp. This could have been down for a few years and then just coming back up for example. 
+
+
