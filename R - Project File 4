@@ -187,8 +187,3 @@ flights %>% group_by(carrier) %>%  summarise(arr_delay = mean(arr_delay, na.rm =
 
 6.	What does the sort argument to count() do. When might you use it?
 ###It sorts the output in terms of n. 
-
-7. Try to come up with a question using the flights dataset and combine data transformation and visualization to address your question. Write a brief statement about what you learned from this analysis.
-###From this analysis, I learned a quick way to intepret and visualize data. A question that I can create using the flights data set using data transformation and visualization is: how often are flights delayed and is there a pattern that can be established for the flights that are delayed? To address this question, I can use data transformation and find out which flights are delayed. Then, I can use data visualization to visualize that relationship. Data transformation helps me utilize informationf from the flights dataset.
-
-
