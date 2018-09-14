@@ -1,0 +1,354 @@
+---
+title: "Final Portfolio"
+author: "sofia sikandar"
+date: "5/8/2018"
+output: word_document
+---
+Examples pulled from my homework assignments, my work done on the discussion board and from class examples. :-)
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Load all necessary libraries
+```{r}
+library (tidyverse)
+library(ggplot2)
+library(nycflights13)
+library(dbplyr)
+library(rpart)
+library(pROC)
+```
+
+#Part I. Data Visualization
+Data visualization is very useful for understanding and visualizing datasets.
+
+Using the dataset mpg. We can manipulate this dataset and come to conclusions about relationships between certain variables.
+```{r}
+mpg 
+```
+
+####Examine the relationship between Engine Size(displ) and City Milage(cty):
+#Before you see the two scatterplots below, think about which one is more informative. 
+Here is the first scatterplot, which is a visualization of the relationship between engine size and city mileage:
+```{r}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = cty, color = "red"))
+```
+
+Now, here is a scatterplot which distinguishes cars with different numbers of cylinders using different colors: 
+```{r}
+ggplot(data = mpg) + geom_point(mapping = aes(x = cyl, y= cty, color = class))
+```
+
+#From the two scatterplots above, which graphic is more informative? To me, it seems that the second graphic is, which is the scatterplot that visualizes cars with different numbers of cylinders. 
+
+####Add facets:
+```{r}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = cty)) +
+  facet_wrap(~ class)
+```
+
+```{r}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = cty)) +
+  facet_grid(drv ~ class)
+```
+
+####Add More Layers:
+The scatterplot below adds a smooth line that shows the relationship between engine size and city mileage: 
+```{r}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = cty,color=class)) +
+  geom_smooth(mapping = aes(x = displ, y = cty))
+```
+
+The scatterplot below makes the smooth line that shows the relationship between engine size and city milage thicker. Here, I also explore other aesthetic attributes, such as changing the color of the smoothline: 
+```{r}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = cty, color=class)) +
+  geom_smooth(mapping = aes(x = displ, y = cty), color = "red", size = 6)
+```
+
+The scatterplot below shows a group of seperate, smooth lines, based on the number of cylinders: 
+```{r}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = cty, color=class)) +
+  geom_smooth(mapping = aes(x = displ, y = cty, group = cyl))
+```
+
+The scatterplot below further adds a straightline to the plot and shows the smooth straightline using the color red: 
+```{r}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = cty, color=class)) +
+  geom_smooth(mapping = aes(x = displ, y = cty), method = "lm", color = "red", se = FALSE)
+```
+
+#Part II. Data Transformation
+Looking at New York City Flights 2013 Data
+Data transformation is very useful for making data relevant to us.
+
+How many flights were made by United Airline (UA)?
+```{r}
+filter (flights, carrier == "UA")
+```
+
+How many flights were delayed by arrival? 
+```{r}
+filter(flights,carrier =="UA", dep_delay > 0)
+```
+
+How many flights were made by planes whose tail number contains 33
+```{r}
+count(filter (flights, str_detect(tailnum, "33")))
+```
+
+How many flights were made by planes whose tail number begins with “N6”
+```{r}
+count(filter (flights, str_detect(tailnum, "N6$")))
+```
+
+How many flights were made by planes whose tail number ends with “AA”
+```{r}
+count(filter (flights, str_detect(tailnum, "^AA")))
+```
+
+How many flights were delayed at departure but not delayed at arrival? 
+```{r}
+count(filter(flights, arr_delay <=0, dep_delay > 0))
+```
+
+How many flights were delayed at arrival  but not delayed at departure?
+```{r}
+count(filter(flights, dep_delay <=0, arr_delay > 0))
+```
+
+How many flights were cancelled? How were cancelled flights distributed among airlines? 
+```{r}
+count(filter (flights, is.na(dep_time), is.na(arr_time)))
+ggplot(data= filter (flights, is.na(dep_time), is.na(arr_time)))+
+  geom_bar(mapping=aes(x=carrier, fill = carrier))
+```
+
+For flights that delayed more than 60 minutes at arrival: show how many were associated with each airline and show the distribution of delayed time at arrival for each airline
+```{r}
+ggplot(data= filter (flights, arr_delay > 60))+
+  geom_bar(mapping=aes(x=carrier, fill = carrier))
+```
+
+Find out the top 20 flights based on delay time at arrival and show their scheduled date and time for departure, delayed time at departure, delayed time at arrival, and airline
+```{r}
+sortedflights <- arrange(flights, desc(arr_delay))
+top20 <- top_n(sortedflights, 20, arr_delay)
+select(top20, hour, minute, dep_delay, arr_delay, carrier, time_hour)
+```
+
+#Part III. Exploratory Data Analysis
+Exploratory Analysis of happiness
+
+###import data first:
+
+```{r}
+data2015 <- read_csv("2015.csv")
+data2017 <- read_csv("2017.csv")
+```
+
+```{r}
+data2015
+data2017
+```
+
+### Data wrangling (get data ready for analysis):
+
+####pick useful variables
+```{r}
+names(data2015)
+subdata2015 <- select(data2015,Country, Region, "Happiness Rank","Happiness Score" )
+subdata2015
+```
+
+```{r}
+names(data2017)
+subdata2017 <- select(data2017,Country,"Happiness.Rank","Happiness.Score" )
+subdata2017
+```
+
+```{r}
+(join1517 <- full_join(subdata2015,subdata2017, by = 'Country'))
+
+```
+
+
+####rename variables to be more meanful
+```{r}
+
+mapnames <- c("Happiness Rank" = "Rank2015", "Happiness Score" = "Score2015","Happiness.Rank" = "Rank2017", "Happiness.Score" = "Score2017")
+
+(renamed <- plyr::rename(join1517, mapnames))
+
+```
+
+####examine NAs
+```{r}
+filter(renamed, is.na(Region))
+```
+
+```{r}
+filter(renamed, is.na(Score2015))
+```
+```{r}
+filter(renamed, is.na(Score2017))
+```
+
+####Fix some NAs
+```{r}
+renamed$Score2017[renamed$Country=="Taiwan"] <- renamed$Score2017[renamed$Country=="Taiwan Province of China"]
+renamed$Rank2017[renamed$Country=="Taiwan"] <- renamed$Rank2017[renamed$Country=="Taiwan Province of China"]
+
+renamed$Score2017[renamed$Country=="Hong Kong"] <- renamed$Score2017[renamed$Country=="Hong Kong S.A.R., China"]
+renamed$Rank2017[renamed$Country=="Hong Kong"] <- renamed$Rank2017[renamed$Country=="Hong Kong S.A.R., China"]
+
+renamed$Region[renamed$Country=="Belize"] <- "Latin America and Caribbean"
+renamed$Region[renamed$Country=="Somalia"] <- "Sub-Saharan Africa"
+renamed$Region[renamed$Country=="Namibia"] <- "Sub-Saharan Africa"
+renamed$Region[renamed$Country=="South Sudan"] <- "Sub-Saharan Africa"
+  
+(happydata <- filter(renamed,
+                renamed$Country !="Taiwan Province of China" & renamed$Country !="Hong Kong S.A.R., China"))
+
+```
+
+####re-examine NAs
+```{r}
+filter(happydata, is.na(Region))
+summary(as.factor(happydata$Region))
+filter(happydata, is.na(Score2015))
+filter(happydata, is.na(Score2017))
+```
+
+The distribution is modeled by the historgram. The mean, median, and range are given by the summary of the dataset. 
+```{r}
+ggplot(data2017, mapping = aes(x = Happiness.Score)) + geom_histogram(binwidth = 0.2) 
+summary(data2017)
+```
+
+Descending
+```{r}
+data2017
+happiness_score_year <- data2017 %>%
+  select(Country, Happiness.Rank) %>%
+  arrange(desc(Happiness.Rank)) %>%
+  top_n(10)
+happiness_score_year
+  
+
+```
+
+Ascending 
+```{r}
+data2017
+happiness_score_year <- data2017 %>%
+  select(Country, Happiness.Rank) %>%
+  arrange((Happiness.Rank)) %>%
+  top_n(10)
+happiness_score_year
+  
+
+```
+
+Regional Differences
+```{r}
+difference_by_region <- happydata %>%
+  group_by(Region) %>%
+  summarize(avg_happiness_ranking = mean(Rank2017)) %>%
+  mutate(Rank2017 = NULL)
+difference_by_region
+  
+```
+
+how has happiness changed over time?
+```{r}
+chdata1517<- mutate (happydata, Chscore1517 = Score2017 - Score2015)
+ggplot(chdata1517, mapping = aes(x = Chscore1517)) + geom_histogram(binwidth = 0.3) 
+summary(chdata1517)
+```
+
+How many countries declined or improved?
+```{r}
+decline <- chdata1517 %>%
+  group_by(Country) %>%
+  select(Country, Score2015, Score2017) %>%
+  mutate(difference_in_improvement = Score2017 - Score2015) %>%
+  filter(difference_in_improvement < 0) %>%
+  summarize(count = n()) %>%
+  mutate(total_countries_declined = sum(count))%>%
+  mutate(count = NULL)
+decline
+```
+
+```{r}
+improvement <- chdata1517 %>%
+  group_by(Country) %>%
+  select(Country, Score2015, Score2017) %>%
+  mutate(difference_in_improvement = Score2017 - Score2015) %>%
+  filter(difference_in_improvement > 0) %>%
+  summarize(count = n()) %>%
+  mutate(total_countries_improved = sum(count)) %>%
+  mutate(count = NULL)
+improvement
+```
+
+#Part IV. Data Modeling 
+A.)
+```{r}
+emails <- read_csv("email.csv")
+```
+
+full linear regression model
+```{r}
+mod_spam <- glm(spam ~ to_multiple + cc, family=binomial, data = emails)
+summary(mod_spam)
+```
+fitness 
+```{r}
+ggplot() +
+  geom_point(mapping=aes(x=mod_spam$fitted.values, y=mod_spam$y), position="jitter")
+```
+B.)
+Import dataset of mouse litters
+```{r}
+litters <- read_csv("litters.csv", guess_max = 1000)
+head(litters,40)
+```
+Variables that affect the response variable: bodywt (body weight) and brnweight (brain weight)
+Response variable: lsize (litter size)
+
+Basic statistics: 
+```{r}
+summary(litters)
+```
+
+```{r}
+summary(factor(litters$bodywt))
+```
+
+```{r}
+summary(factor(litters$brainwt))
+```
+
+```{r}
+summary(factor(litters$lsize))
+```
+
+The relationships between the response variables and the variables that affect the response variable:
+Bodyweight versus Litter Size
+```{r}
+ggplot(data = litters) +geom_smooth(mapping = aes(x=bodywt, y=lsize))
+```
+Brainweight versus Litter Size
+```{r}
+ggplot(data = litters, aes(x=brainwt, y=lsize)) +geom_smooth()
+```
+#Part V. Reflection
+I’m thankful for my experiences in this class. Overall, they were very positive and I learned how to organize and clean data. At the beginning of the semester, Professor Qing mentioned that we should see R as a “calculator”. R is an incredibly powerful tool. I’m glad I can tidy, visualize, transform, and model data. 
