@@ -1,0 +1,9 @@
+import wave
+import os
+os.getcwd()
+fname = '/Users/sofiasikandar/CDS230/data/gtr-nylon22.wav'
+w = wav e.openfp(fname)
+w.getnchannels()
+w.getframerate()
+w.getparams()
+total.w.getnframes()/getframerate()
