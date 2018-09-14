@@ -1,0 +1,194 @@
+---
+title: "assignment2"
+author: "sofia sikandar"
+date: "2/26/2018"
+output: word_document
+---
+Import libraries 
+```{r}
+library("nycflights13")
+library("tidyverse")
+```
+#5.2.4 Exercises:
+1a.)	Had an arrival delay of two or more hours
+```{r}
+flights %>% filter(arr_delay >= 120)
+```
+
+1b.)	Flew to Houston (IAH or HOU)
+```{r}
+flights %>% filter(dest %in% c("IAH", "HOU"))
+```
+
+1c.)	Were operated by United, American, or Delta
+```{r}
+filter(flights, carrier %in% c("AA", "DL", "UA"))
+```
+
+1d.)	Departed in summer (July, August, and September)
+```{r}
+filter(flights, between(month, 7, 9))
+```
+
+1e.)	Arrived more than two hours late, but didn’t leave late
+```{r}
+filter(flights, !is.na(dep_delay), dep_delay <= 0, arr_delay > 120)
+```
+
+1f.)	Were delayed by at least an hour, but made up over 30 minutes in flight
+```{r}
+filter(flights, !is.na(dep_delay), dep_delay >= 60, dep_delay-arr_delay > 30)
+```
+
+1g.)	Departed between midnight and 6am (inclusive)
+```{r}
+filter(flights, dep_time <=600 | dep_time == 2400)
+```
+
+2.	Another useful dplyr filtering helper is.between(). What does it do? Can you use it to simplify the code needed to answer the previous challenges?
+###This method gives values between two specified parameters. It allows users to receive values between a range of numbers. For example, for 1a we can change the code to filter(flights, between(arr_delay,0,120))
+
+3.	How many flights have a missing.dep_time? What other variables are missing? What might these rows represent?
+###Those values that are missing may represent that the data is not existent. For example, if dep_delay was missing, then there must not have been a delay.
+```{r}
+filter(flights, is.na(dep_time))
+```
+
+4.	Why is NA ^ 0 not missing? Why is NA | TRUE not missing? Why is.FALSE & NA not missing? Can you figure out the general rule? (NA * 0 is a tricky counterexample!)
+NA ^ 0 is not missing because any value raised to the zero power is 1. NA | TRUE is not missing because the value will always be TRUE. NA & FALSE is always false. NA * 0 since a value multiplied by 0 is undefined. 
+```{r}
+NA ^ 0 
+NA | TRUE 
+NA & FALSE 
+NA * 0 
+```
+#5.3.1 Exercises
+
+1.	How could you use arrange() to sort all missing values to the start? (Hint: use is.na()).
+```{r}
+arrange(flights, desc(is.na(dep_time)), dep_time)
+```
+
+2.	Sort flights to find the most delayed flights. Find the flights that left earliest.
+```{r}
+arrange(flights, desc(dep_delay))
+```
+
+3.	Sort flights to find the fastest flights.
+```{r}
+arrange(flights, air_time)
+```
+
+4.	Which flights travelled the longest? Which travelled the shortest?
+```{r}
+arrange(flights, desc(distance))
+```
+
+#5.4.1 Exercises
+1.	Brainstorm as many ways as possible to select dep_time,dep_delay,arr_time, and arr_delayfrom flights.
+```{r}
+select(flights, starts_with("arr_"), starts_with("dep_"))
+```
+
+2.	What happens if you include the name of a variable multiple times in a select() call?
+Any variables that are repeated will be ignored
+```{r}
+select(flights, year, year, year, day)
+```
+
+3.	What does the one_of() function do? Why might it be helpful in conjunction with this vector?
+one_of chooses a quoted variable or from a character vector.
+```{r}
+vars <- c("year", "month", "day", "dep_delay", "arr_delay")
+select(flights,one_of(vars))
+```
+
+4.	Does the result of running the following code surprise you? How do the select helpers deal with case by default? How can you change that default?
+The output does not surprise me, since each variable contains the keyword "TIME". To alter the behavior, add ignore.case = FALSE. 
+```{r}
+select(flights,contains("TIME"))
+```
+
+#5.5.2 Exercises
+1.	Currently dep_time and sched_dep_time are convenient to look at, but hard to compute with because they’re not really continuous numbers. Convert them to a more convenient representation of number of minutes since midnight.
+```{r}
+mutate(flights,
+       dep_time_mins = dep_time %/% 100 * 60 + dep_time %% 100, sched_dep_time_mins = sched_dep_time %/% 100 * 60 + sched_dep_time %% 100) %>% select(dep_time, dep_time_mins, sched_dep_time, sched_dep_time_mins)
+```
+
+2.	Compare air_time with arr_time - dep_time. What do you expect to see? What do you see? What do you need to do to fix it?
+```{r}
+mutate(flights,air_time2 = arr_time - dep_time, air_time_diff = air_time2 - air_time) %>% filter(air_time_diff != 0) %>% select(air_time, air_time2, dep_time, arr_time, dest)
+```
+
+3.	Compare dep_time, sched_dep_time, and dep_delay. How would you expect those three numbers to be related?
+###They are all fixed values. 
+```{r}
+mutate(flights, dep_delay2 = dep_time - sched_dep_time) %>% filter(dep_delay2 != dep_delay) %>% select(dep_time, sched_dep_time, dep_delay, dep_delay2)
+```
+
+4.	Find the 10 most delayed flights using a ranking function. How do you want to handle ties? Carefully read the documentation for min_rank().
+```{r}
+flights %>% filter(min_rank(-(dep_delay)) %in% 1:10)
+flights %>% top_n(10, dep_delay)
+```
+
+5.	What does 1:3 + 1:10 return? Why?
+###It results in c(1 + 1, 2 + 2, 3 + 3, 1 + 4, 2 + 5, 3 + 6, 1 + 7, 2 + 8, 3 + 9, 1 + 10) because values one through three are recycled. 
+
+6.	What trigonometric functions does R provide?
+###cosine, sine, tangent. 
+
+#5.6.7 Exericses
+
+1.	Brainstorm at least 5 different ways to assess the typical delay characteristics of a group of flights. Consider the following scenarios: (3.5 points)
+```{r}
+str(flights)
+head(flights)
+flight_delay_summary <- group_by(flights, flight) %>% summarise(num_flights = n(), percentage_on_time = sum(arr_time == sched_arr_time)/num_flights,
+percentage_early = sum(arr_time < sched_arr_time)/num_flights, percentage_15_mins_early = sum(sched_arr_time - arr_time == 15)/num_flights, percentage_late = sum(arr_time > sched_arr_time)/num_flights,percentage_15_mins_late = sum(arr_time - sched_arr_time == 15)/num_flights, percentage_2_hours_late = sum(arr_time - sched_arr_time == 120)/num_flights)
+flight_delay_summary
+```
+
+Which is more important: arrival delay or departure delay?
+###Arrival delay is more important.
+
+2.	Come up with another approach that will give you the same output as not_cancelled %>% count(dest) and not_cancelled %>% count(tailnum, wt = distance) without using count()).
+```{r}
+not_cancelled <- flights %>% filter(!is.na(dep_delay), !is.na(arr_delay))
+
+not_cancelled %>% count(dest)
+```
+
+3.	Our definition of cancelled flights (is.na(dep_delay) | is.na(arr_delay)) is slightly suboptimal. Why? Which is the most important column?
+###The most important column is dep_delay because we are focusing on cancelled flights
+```{r}
+filter(flights, !is.na(dep_delay), is.na(arr_delay)) %>%
+  select(dep_time, arr_time, sched_arr_time, dep_delay, arr_delay)
+```
+
+4.	Look at the number of cancelled flights per day. Is there a pattern? Is the proportion of cancelled flights related to the average delay?
+```{r}
+canceled_delayed <- 
+  flights %>%
+  mutate(canceled = (is.na(arr_delay) | is.na(dep_delay))) %>%
+  group_by(year, month, day) %>%
+  summarise(prop_canceled = mean(canceled),
+            avg_dep_delay = mean(dep_delay, na.rm = TRUE))
+ggplot(canceled_delayed, aes(x = avg_dep_delay, prop_canceled)) +
+  geom_point()
+```
+
+5.	Which carrier has the worst delays? Challenge: can you disentangle the effects of bad airports vs. bad carriers? Why/why not? (Hint: think about flights %>% group_by(carrier, dest) %>% summarise(n())) (2 points)
+FL has the worst delays
+```{r}
+flights %>% group_by(carrier) %>%  summarise(arr_delay = mean(arr_delay, na.rm = TRUE)) %>% arrange(desc(arr_delay))
+```
+
+6.	What does the sort argument to count() do. When might you use it?
+###It sorts the output in terms of n. 
+
+7. Try to come up with a question using the flights dataset and combine data transformation and visualization to address your question. Write a brief statement about what you learned from this analysis.
+###From this analysis, I learned a quick way to intepret and visualize data. A question that I can create using the flights data set using data transformation and visualization is: how often are flights delayed and is there a pattern that can be established for the flights that are delayed? To address this question, I can use data transformation and find out which flights are delayed. Then, I can use data visualization to visualize that relationship. Data transformation helps me utilize informationf from the flights dataset.
+
+
