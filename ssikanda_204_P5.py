@@ -1,0 +1,164 @@
+#-------------------------------------------------------------------------------
+# Name: Sofia Sikandar                                                         
+# G#: G00964476                                                           
+# Project 5                                                                   
+# Lab Section 204                                                                   
+#-------------------------------------------------------------------------------
+# Honor Code Statement: I received no assistance on this assignment that
+# violates the ethical guidelines set forth by professor and class syllabus.
+#-------------------------------------------------------------------------------
+# References: Lecture slides, zybook, multiple office hour sessions.                                                                 
+#-------------------------------------------------------------------------------
+# Comments and assumptions: A note to the grader as to any problems or 
+# uncompleted aspects of the assignment, as well as any assumptions about the
+# meaning of the specification.
+#-------------------------------------------------------------------------------
+#methods: s.split(), s.join(), s.pop(), 
+# NOTE: width of source code should be <= 80 characters to facilitate printing.
+#2345678901234567890123456789012345678901234567890123456789012345678901234567890
+#       10        20        30        40        50        60     70        80
+#------------------------------------------------------------------------------
+def read_file(filename): #creates an unranked database after reading file
+	file = open("file.txt") #opens 
+	lines = file.readlines() #reads lines
+	file.close() #closes
+
+
+def add_name (db, name, gender, year, count): #updates the given arguments to the database
+	if (name, gender) in db.keys(): 
+		db1 = db[(name, gender)] 
+		db1[year] = (count, None)  
+		db[(name, gender)] = db1
+	else:
+		db1 = {(name, gender): {year: (count, None)}} 
+		db.update(db1)
+		
+def find_all_years (db): #adds in years and puts them in ascending order
+	list = [] 
+	for k, v in db.items():
+		for x, y in v.items():
+			if x not in list:
+				list.append(x)
+	return sorted(list) 
+	
+#8 errors 	
+def new_names(db, gender, old_year, new_year): #accepts given args
+	list1 = [] 
+	for x, y in db.items():
+		if gender in x:
+			for z in y.keys():
+				if z == new_year:
+					list.append(x[0])
+		if (old_year in y.keys()):
+			list.remove(n[0])
+	list.sort()
+	return list
+	
+#ranks the names for one year for males and females 
+def rank_names_for_one_year (db, year):
+	males = []
+	females = []
+	for k, v in db.items():
+		for a, b in v.items():
+			if (a == year and k[1] == "MALE"):
+				males.append(b[0])
+				males.sort()
+			if(a == year and k[1] == "FEMALE"):
+				females.append(b[0])
+				females.sort()
+	for j, k in db.items():
+		for x, y in k.items():
+			if(x == year and j[1] == "MALE"):
+				for i in range(len(males)):
+					if(males[i] == y[0]): 
+						k[x] = (y[0], len(males) - i)
+			if(x == year and j[1] == "FEMALE"):
+				for z in range(len(females)):
+					if (females[z] == y[0]):
+						k[x] = (y[0], len(females) - z)
+
+						
+def rank_names (db): #implements previous defs to rank names 
+	for i in find_all_years(db):
+		rank_names_for_one_year(db, i)
+		
+	
+def popularity_by_name(rdb, name, gender): #sorts records of most common names
+	records = [] 
+	for k, v in rdb.items():
+		if name in k:
+			for k1, v1 in v.items():
+				res = (k1, v1[1])
+				records.append(res)
+	return records 
+
+#checks for year, gender, and top
+#appends the rank and name as a tuple to the list
+def popularity_by_year(rdb, gender, year, top=10): 
+	rankname = []
+	for k, v in rdb.items(): 
+		if gender == k[1]:
+			for k2 , v2 in v.items():
+				if year == k2:
+					if top >= v2[1]:
+						res = (v2[1], k[0])
+						rankname.append(res)
+	rankname.sort()
+	return rankname 
+
+
+#makes a list of years for every name you iterate 
+#and empty the list after you check that name
+def always_popular_names(rdb, gender, years=None, top=10):
+	names = [] #name of list
+	top = []
+	list = [] 
+	if(years != None):
+		for x, y in rdb.items():
+			z = 0 
+			c = 0
+			for k, v in y.items():
+				if(x[1] == gender):
+					if(k in years and top >= v[1]):
+						z+= v[1]
+						c+= 1
+			if(c == len(years)):
+				names.append((z, x[0]))
+	else:
+		years = find_all_years(rdb)
+		for x, y in rdb.items():
+			z = 0 
+			c = 0 
+			for k, v in y.items():
+				if(x[1] == gender):
+					if(k in years and top >= v[1]):	
+						z+= v[1]
+						c += 1 
+			if(c == len(years)):
+				names.append((z,x[0]))
+	names.sort()
+	names.reverse()
+	for z in range(len(names)):
+		top.append(names[z][1])
+	top.sort()
+	return top 
+
+#check if the name has those two years and check if the rank for old year has increased
+#meaning the rank value is lesser in new year
+def increasing_rank_names(rdb, gender, old_year, new_year):
+	list = []
+	for a, b in rdb.items():
+		if gender == a[1]:
+			for x, y in b.items():
+				if(new_year in b.keys() and old_year in b.keys()):
+					if x == old_year:
+						oldrank = y[1]
+						for g, k in b.items():
+							if g == new_year:
+								newrank = k[1]
+								if newrank < oldrank:
+									if a[0] not in list:
+										list.append(a[0])
+	list.sort()
+	return list
+	
