@@ -1,0 +1,64 @@
+#-------------------------------------------------------------------------------
+
+# TASK 0 (example)
+def is_even(n):
+	ans = None # sets starting value for ans
+	if n % 2 == 0 : # checks if n is divisible by 2 
+		ans = True 
+		# if n is even, return True
+	else:
+		ans = False 
+		# if n is odd, return False
+	return ans
+
+#-------------------------------------------------------------------------------
+
+# TASK 1
+
+# given a non-negative integer, this function returns a
+# string (it does not print!) matching the letter grade
+# for our class (check the syllabus).
+def letter_grade(score):
+	# starting value for variable ans. Change it before
+	# the end of the function.
+	ans = None
+	# series of statements below sets the grading scale
+	if score >= 98:
+		ans = "A+"
+	elif 91 < score <= 97:
+		ans = "A"
+	elif 89 < score <= 91:
+		ans = "A-"
+	elif 87 < score <= 89: 
+		ans = "B+"
+	elif 81 < score <= 87:
+		ans = "B"
+	elif 79 < score <= 81:
+		ans = "B-"
+	elif 77 < score <= 79:
+		ans = "C+"
+	elif 71 < score <= 77:
+		ans = "C"
+	elif 69 < score <= 71:
+		ans = "C-"
+	elif 59 < score <= 69: 
+		ans = "D"
+	elif score <= 59: #any score equal to or less than 59 is an F
+		ans = "F"
+	# leave this as the last line of your function.	
+	return ans
+	
+#-------------------------------------------------------------------------------
+
+# TASK 2
+def sum2biggest(a, b, c):
+	ans = None
+	if a >= b and c >= b:
+		ans = a + c 
+	elif c >= a and b >= a:
+		ans = b + c	
+	elif b >= c and a >= c:
+		ans = b + a
+	return ans
+
+#-------------------------------------------------------------------------------
