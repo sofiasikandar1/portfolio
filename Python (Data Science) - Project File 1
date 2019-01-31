@@ -1,0 +1,388 @@
+import os 
+os.chdir('/Users/sofiasikandar/CDS230/homework/movies')
+# movies.py
+
+# ########### Loading Functions #################
+def LoadMovies( movieName ):
+    txt = open( movieName ).read()
+    txt = txt.split('\n')
+    movies =  []
+    for i in range( 1,len(txt)-1 ):
+        a = txt[i].split('\t')
+        mid = int( a[0] )
+        if a[2].isnumeric():
+            year = int(a[2] )
+        else:
+            year = 0
+        if a[3].isnumeric():
+            grade = int(a[3] )
+        else: 
+            grade = 0
+        movies.append( (mid,a[1],year,grade))
+    return movies
+
+def LoadIsin( isinName ):
+    txt = open( isinName ).read().split('\n')
+    isin = []
+    for i in range( 1, len(txt)-1 ):
+        a = txt[i].split('\t')
+        isin.append( (int(a[0]), int(a[1]), int(a[2] )))
+    return isin
+
+def LoadActors( actorsName ):
+    txt = open( actorsName ).read().split('\n')
+    actors = []
+    for i in range( 1, len(txt)-1):
+        a = txt[i].split('\t')
+        aid = int(a[0])
+        actors.append( (aid,a[1],a[2] ))
+    return actors
+
+def LoadCtryLang( filename ):
+    data = open(filename).read()
+    data = data.split('\n')
+    answ = []
+    for i in data[1:-1]:
+        r = i.split('\t')
+        cid = int( r[0] )
+        answ.append( (cid, r[1] ) )
+    return answ
+
+def LoadInCtryLang( filename ):
+    data = open(filename).read()
+    data = data.split('\n')
+    answ = []
+    for i in data[1:-1]:
+        r = i.split('\t')
+        cndx, mid, cid = int( r[0] ), int( r[1] ), int( r[2] )
+        answ.append( ( cndx, mid, cid) )
+    return answ
+
+# ########### Analysis Functions #################
+
+# average:   avg = sum(inlist)/len(inlist)
+
+def CombineLists( list1, list2 ):
+    s1 = set(list1)
+    s3 = s1.intersection( list2 )
+    outlist = list( s3 )
+    return outlist
+
+
+# ########### Single input single output #################
+
+def TitleFromMid( movies, mid ):
+    tt = ''
+    for i in movies:
+        if mid==i[0]:
+            tt = i[1]
+            break
+    return tt
+
+def MovieDataFromMid( movies, mid ):
+    tt = ()
+    for i in movies:
+        if mid==i[0]:
+            tt = i
+            break
+    return tt
+
+def LidFromLanguage( languages, inputlang ):
+    """Returns lid
+    languages: the languages table
+    inputlang: a string that is the query language
+    output: integer that is the lid"""
+    lid = -1
+    for i in languages:
+        if i[1] == inputlang:
+            lid = i[0]
+            break
+    return lid
+
+def LangFromLndx( langs, lndx ):
+    lang = ''
+    for i in langs:
+        if lndx == i[0]:
+            lang = i[1]
+            break
+    return lang
+
+def NameFromAid( actors, aid ):
+    fn, ln = '',''
+    for a in actors:
+        if aid == a[0]:
+            fn, ln = a[1], a[2]
+            break
+    return fn, ln
+
+# ########### Single Input - Multi Output #################
+
+def TitlesFromYear( movies, year ):
+    titles = []
+    for m in movies:
+        if year== m[2]:
+            titles.append( m[1] )
+    return titles
+
+def MidsFromYear( movies, year ):
+    mids = []
+    for m in movies:
+        if year== m[2]:
+            mids.append( m[0] )
+    return mids
+
+def MidsFromGradeRange( movies, lo, hi ):
+    mids = []
+    for m in movies:
+        if lo <= m[3] <= hi:
+            mids.append( m[0] )
+    return mids
+
+def MidsFromGrade( movies, grade ):
+    mids = []
+    for m in movies:
+        if grade==m[3]:
+            mids.append( m[0] )
+    return mids
+
+def YearsFromGrades( movies, grade ):
+    years = []
+    for m in movies:
+        if grade==m[3]:
+            years.append( m[2] )
+    years = list(set(years))
+    return years
+
+
+def GradesFromYear( movies, year ):
+    grades = []
+    for m in movies:
+        if year==m[2]:
+            grades.append( m[3] )
+    return grades
+
+def MoviesDataFromMids( movies, mids ):
+    answ = []
+    for m in mids:
+        answ.append( MovieDataFromMid( movies, m ))
+    return answ
+
+def AidFromName( actors, firstname, lastname ):
+    aid = -1
+    for a in actors:
+        if a[1] == firstname and a[2] == lastname:
+            aid = a[0]
+            break
+    return aid
+
+def AidsFromFirstname( actors, firstname ):
+    aids = []
+    for a in actors:
+        if a[1] == firstname:
+            aids.append( a[0] )
+    return aids
+
+def AidsFromLastname( actors, lastname ):
+    aids = []
+    for a in actors:
+        if a[2] == lastname:
+            aids.append( a[0] )
+    return aids
+
+def AidsFromMid( isin, mid ):
+    aids = []
+    for i in isin:
+        if mid==i[1]:
+            aids.append( i[2] )
+    return aids
+
+def MidsFromAid( isin, aid ):
+    mids = []
+    for i in isin:
+        if aid == i[2]:
+            mids.append( i[0] )
+    return mids
+
+def LndxsFromMid( inlang, mid ):
+    lndxs = []
+    for l in inlang:
+        if mid == l[1]:
+            lndxs.append( l[2] )
+    return lndxs
+
+# ########### Multi Input - Multi Output #################
+
+
+def GradesFromYears( movies, years ):
+    answ = []
+    for y in years:
+        grades = GradesFromYear( movies, y  )
+        if len(grades)>0:
+            avg = sum(grades)/len(grades)
+            answ.append( (avg,y ) )
+    return answ
+
+def TitlesFromMids( movies, mids ):
+    answ = []
+    for m in mids:
+        t = TitleFromMid( movies, m )
+        answ.append( t )
+    return answ
+
+def LndxsFromMids( inlang, mids ):
+    answ = []
+    for m in mids:
+        n = LndxsFromMid( inlang, m )
+        answ.extend( n )
+    answ = list(set(answ))
+    return answ
+
+def LangsFromLndxs( langs, lndxs ):
+    answ = []
+    for i in lndxs:
+        answ.append( LangFromLndx(langs, i ))
+    return answ
+
+def AidsFromMids( isin, mids ):
+    aids = []
+    for m in mids:
+        aids.extend( AidsFromMid( isin, m ))
+    aids = list(set(aids))
+    return aids
+
+def NamesFromAids( actors, aids ):
+    names = []
+    for a in aids:
+        names.append( NameFromAid(actors,a))
+    return names
+
+def CountriesFromCids( countries, cids ):
+    ctrys = []
+    for i in countries:
+        if i[0] in cids:
+            ctrys.append( i[1] )
+    return ctrys
+
+
+
+
+
+# ########### Multi Table Functions #################
+
+def MidsFromLid( inlang, lid ):
+    mids = []
+    for i in inlang:
+        if i[2] == lid:
+            mids.append( i[1] )            
+    return mids
+
+def MidsFromAid( isin, aid ):
+    mids = []
+    for i in isin:
+        if i[2] == aid:
+            mids.append( i[1] )            
+    return mids
+
+def CidsFromMids( incountry, mids ):
+    cids = []
+    for i in incountry:
+        if i[1] in mids:
+            cids.append( i[2] )
+    cids = list( set( cids ))
+    return cids
+
+
+movies = LoadMovies('movies.csv')
+actors = LoadActors('actors.csv')
+CtryLang = LoadCtryLang('country.csv')
+InCtryLang = LoadInCtryLang('incountry.csv')
+isin = LoadIsin('isin.csv')
+
+year = []
+for m in movies:
+    if 1950<=m[2]<=1959:
+        move = TitlesFromYear(movies, m[2])
+        year.append(m[1])
+print(year)
+
+years = []
+listmids = MidsFromGrade(movies,1)
+moviedata = MoviesDataFromMids(movies,listmids)
+for m in range (len(moviedata)):
+    years.append(moviedata[m][2])
+print((set(years)))
+
+isin = LoadIsin('isin.csv')
+len(AidsFromMid(isin,200))
+
+movies = LoadMovies('movies.csv')
+average = sum(GradesFromYear(movies, 1950))/len(GradesFromYear(movies, 1950))
+
+import statistics 
+def LengthFromMovie(movies, mid):
+    emlist = []
+    for row in movies: 
+        emlist.append(len(row[1]))
+    average = sum(emlist)/len(emlist)
+    std = statistics.stdev(emlist)
+    return average, std 
+    
+list1 = []
+actors = LoadActors('actors.csv')
+for i in actors:
+    firstname = i[1]
+    if " " in i[1]:
+        list1.append(i[1])    
+        
+movies = LoadMovies('movies.csv')
+list = []
+for m in movies:
+    list.append(m[2])
+x = set(list)
+print(x)
+
+list1 = []
+for i in x:
+    if len(GradesFromYear(movies,i))>=5:
+        list1.append(i)
+        
+grades = []
+for g in list1:
+    score = sum(GradesFromYear(movies,g))
+    num = len(GradesFromYear(movies,g))
+    average = score/num
+    grades.append(average)
+faverage = grades
+faverage1 = grades.sort()
+
+list1 =[]
+    #actor id is 105 
+jgood = AidFromName(actors, 'John', 'Goodman')
+mids = MidsFromAid(isin, 105)  
+for i in movies:
+    if i[0] in mids: 
+        list1.append(i[3])
+average = sum(list1)/len(list1)
+
+inlang = LoadInCtryLang('inlang.csv')
+langs = LoadCtryLang('langs.csv')
+AidFromName(actors, 'Peter', 'Falk')
+mids = MidsFromAid(isin, 176)
+LndxsFromMids(inlang, mids)
+lndxs = LndxsFromMids(inlang, mids)
+LangsFromLndxs(langs, lndxs)
+
+isin = LoadIsin('isin.csv')
+id = []
+for i in range(len(isin)):
+    x = isin[i][2]
+    id.append(x)
+d = {}
+for i in range(len(id)):
+    k = id[i]
+    d[k]=d.get(k,0)+1
+s = sorted(d.items(),key=lambda kv:kv[1])
+last5 = s[-5:]
+last = [9,26,122,56,530]
+
+names = NamesFromAids(actors,last)
