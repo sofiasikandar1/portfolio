@@ -1,0 +1,56 @@
+#-------------------------------------------------------------------------------
+# Name: Sofia Sikandar                                                                                                                     
+#-------------------------------------------------------------------------------
+# Honor Code Statement: I received no assistance on this assignment that
+# violates the ethical guidelines set forth by professor and class syllabus.
+#-------------------------------------------------------------------------------
+# References: Lab 6 powerpoint slides, zybook 7, lib and lang readings, office hours 
+# Most helpful were assistants during office hours                                                                 
+#-------------------------------------------------------------------------------
+# Comments and assumptions: A note to the grader as to any problems or 
+# uncompleted aspects of the assignment, as well as any assumptions about the
+# meaning of the specification.
+#-------------------------------------------------------------------------------
+# NOTE: width of source code should be <= 80 characters to facilitate printing.
+#2345678901234567890123456789012345678901234567890123456789012345678901234567890
+#       10        20        30        40        50        60      70        80
+#------------------------------------------------------------------------------
+
+def show_time(hour, min):
+	hour = int(hour) #changes the variable hour from string to int
+	min = int(min) #changes the variable min from string to int 
+	min = ("%02d" % (min)) 
+	if hour == 0: #if hour is equal to 0, then it is also equal to 12
+		hour = 12
+		hour = str(hour) #changes hour back to string 
+		return ("{0}:{1}am".format(hour,min)) #formats and returns time for user
+	if 1 <= hour < 12: #sets range for hour
+		hour = str(hour) #changes hour back to string
+		return ("{0}:{1}am".format(hour,min))
+	if hour == 12:
+		hour = str(hour) #changes the type of hour to string 
+		return("{0}:{1}pm".format(hour,min))
+	if 12 < hour < 24: #range for hour 
+		hour = hour - 12
+		hour = str(hour) #changes int type to a string
+		return("{0}:{1}pm".format(hour,min))
+	if hour == 24:
+		hour = hour - 12 #subtracts 24 by 12 if hour is equal to 24
+		hour = str(hour)
+		return ("{0}:{1}am".format(hour,min))
+
+def split_up(funds, people):
+	share = funds/people #divides funds by the amount of people
+	return "each person (of %d) gets $%.2f as their share" % (people, share) #return conversion function 
+
+def border_msg(msg):
+	var = msg.split('\n') #splits the message and returns a new line
+	largest_string = len(max(var, key=len)) 
+	frame = "+-" + ("-" * largest_string) + "-+\n" 
+	var2 = frame #sets the second variable to frame of the message
+	for y in var: 
+		cntrmsg = "| {:^{}s} |\n".format(y, largest_string)
+		var2+= cntrmsg #surrounds the center message by the frae
+	var2+=frame
+	return var2
+	
