@@ -1,0 +1,61 @@
+import numpy as np
+vec = np.random.rand( 10000000 )
+def average():
+    start=0
+    for i in vec:
+        start+=i
+    avg=start/len(vec)
+    return avg
+average()
+np.mean(vec)
+
+import time
+start = time.time()
+def average():
+    total=0
+    for i in vec:
+        total+=i
+    avg=total/len(vec)
+    return avg
+average()
+end=time.time()
+diff1=end-start
+start = time.time()
+np.average(vec)
+end=time.time()
+diff2=end-start
+diff1/diff2
+
+np.random.seed(23423)
+a=np.random.rand(5)
+b=np.random.rand(5)
+c=np.random.rand(5)
+d=a+b*c
+
+np.random.seed(453)
+mat = np.random.ranf( (5,5))
+mat[1,3] , mat[2,2] , mat[3,1]
+
+y1=600
+g=-9.8
+t=np.array([1,2,3,4,5,6,7,8,9,10])
+y2=y1+.5*g*t**2
+
+rvec=[(2,2.3,2.8,3,3.3,4.0)]
+mat=np.zeros((50,6))
+mat[0]=.1
+for i in range(1,len(mat)):
+    x=mat[i-1]
+    y=rvec*x*(1-x)
+    mat[i]=y
+mat[-4:]
+
+np.random.seed(235)
+c=([1,1,1])
+X=np.random.ranf((10,3))
+A=X.T
+B=X
+h=np.dot(A,B)
+e=np.linalg.inv(h)
+l=np.dot(X,e)
+p=np.dot(l,c)
