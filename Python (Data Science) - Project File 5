@@ -1,0 +1,95 @@
+#Question 1
+file ='/Users/sofiasikandar/CDS230/homework/hw4/dna.txt'
+import math
+def BothN(n):
+    y = math.sqrt(n)
+    a = n**2
+    return y,a
+#Question2
+import random
+from math import sqrt
+list = []
+def TrigSquare(n):
+    for i in range(n):
+        r = random.uniform(0, 2*math.pi)
+        y = math.cos(r)**2 + math.sin(r)**2
+        list.append(y)
+        return list
+#Question3
+def distance(a,b,c=0):
+    d = math.sqrt(a**2+b**2+c**2)
+    return d
+#Question4
+import random
+list = []
+def MeanRandom(n):
+    r = random.random()
+    list.append(r)
+    mean = float(n)/len(list)
+    return mean
+#Question5
+import math
+def NSquared(n):
+    list = []
+    for i in n:
+        l = math.sqrt(i)
+        list.append(l)
+    return list
+
+#Question6 
+def Motion(x0, v, t, a=0):
+    equation = x0+v*t+(0.5*a*t**2)
+    return equation
+    
+#Question7 
+def Bounce(v0,t):
+    x1 = 0
+    x2 = 10
+    twall = (x2-x1)/v0
+    if t<twall: 
+        pos = Motion(x1,v0,t)
+        return (pos,v0)
+    else: 
+        pos = Motion(x2,-v0,t-twall)
+        return (pos,v0)
+#Question8
+filename ='/Users/sofiasikandar/CDS230/homework/hw4/dna.txt'
+dna = open(filename).read() 
+
+def FindATG(dna):
+    atg =[]
+    loc = dna.find('atg')
+    while(loc!=-1):
+        atg.append(loc)
+        loc = dna.find('atg',loc+1) #find it again
+    return atg 
+    
+#Question9
+def Letters(dna):
+    pairs = []
+    counts = {} 
+    for i in dna: 
+        if i in counts:
+            counts[i] = counts[i] + 1
+        else: 
+            counts[i] = 1 
+    for l in counts: 
+        pairs.append((l,counts[l])) #creates tuple
+    return pairs
+
+Letters(sorted(dna))
+
+
+#Question10
+def ThreeMer(dna):
+    atg = []
+    loc = dna.count('atg')
+    mer = dna[loc+3, loct+6]
+    d = {}
+    while(loc!=-1):
+        atg.append(loc)
+        loc = dna.find('atg',loc+1) #find it again
+        if mer not in d:
+            y= dna.count(mer)
+            d[mer] = y #key in dictionary occurs y time
+    return d
