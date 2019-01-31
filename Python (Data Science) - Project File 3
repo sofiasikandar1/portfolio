@@ -1,0 +1,69 @@
+#1-6
+import random
+class RaceTrack:
+    def __init__(self):
+        self.racers = []
+    def add_racer(self, racer):
+        self.racers.append(racer)
+    def run_race(self, distance):
+        results = []
+        self.distance = distance
+        for r in self.racers:
+            d = 0 
+            steps = 0 
+            while(d<distance):
+                d = d + r.run()
+                steps+=1
+            results.append((steps, r.name))
+        results = sorted(results)
+        return(results[0][1])
+                
+class Racer:
+    def __init__(self,name,speed):
+        self.name = name
+        self.speed = speed
+    def run(self):
+        pass
+class Tortoise(Racer):
+    def run(self):
+        return(self.speed)
+class Hare(Racer):
+    def run(self):
+        max_speed = random.random()*self.speed
+        return max_speed
+class Duck(Racer):
+    def __init__(self,name,minspeed,maxspeed):
+        self.name = name
+        self.minspeed = minspeed
+        self.maxspeed = maxspeed
+    def run(self):
+        range1 = self.maxspeed - self.minspeed
+        scale = ( range1 * random.random() ) + self.minspeed
+        return scale
+
+#Question7 
+r = RaceTrack()
+r1= Tortoise('Yertle',5)
+r2 = Hare('Thumper', 10)
+r.add_racer(r1)
+r.add_racer(r2)
+random.seed(4378)
+r.run_race(1000)
+
+#Question8
+r = RaceTrack()
+r1= Tortoise('Yertle',5)
+r2 = Hare('Thumper', 10)
+r.add_racer(r1)
+r.add_racer(r2)
+random.seed(34892)
+r.run_race(1000)
+
+#Question10
+r = RaceTrack()
+r2= Duck('Eggbert',3,7)
+r.add_racer(r2)
+random.seed(6278)
+r.run_race(1000)
+
+
