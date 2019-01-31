@@ -1,9 +1,81 @@
-import wave
-import os
-os.getcwd()
-fname = '/Users/sofiasikandar/CDS230/data/gtr-nylon22.wav'
-w = wav e.openfp(fname)
-w.getnchannels()
-w.getframerate()
-w.getparams()
-total.w.getnframes()/getframerate()
+#-------------------------------------------------------------------------------
+# Name: Sofia Sikandar                                                                                                                                                                                 
+#-------------------------------------------------------------------------------
+# Honor Code Statement: I received no assistance on this assignment that
+# violates the ethical guidelines set forth by professor and class syllabus.
+#-------------------------------------------------------------------------------
+# References: Lecture slides, zybook, multiple office hour sessions, collab. partners                                                                 
+#-------------------------------------------------------------------------------
+# Comments and assumptions: A note to the grader as to any problems or 
+# uncompleted aspects of the assignment, as well as any assumptions about the
+# meaning of the specification.
+#-------------------------------------------------------------------------------
+# NOTE: width of source code should be <= 80 characters to facilitate printing.
+#2345678901234567890123456789012345678901234567890123456789012345678901234567890
+#       10        20        30        40        50        60    70        80
+#------------------------------------------------------------------------------
+class Grade:
+	def __init__(self, kind, name, percent):   #represents a specific score on a specific kind of assessment 
+		self.kind = kind 
+		self.name = name
+		self.percent = percent	
+		if self.kind != "test" and self.kind != "project" and self.kind != "lab" and self.kind != "survey" and self.kind != "final":
+			msg = 'no Grade kind \'%s\'' % (kind) 
+			raise GradingError(msg)
+	def __str__(self): #advanced string formatting 
+		return "%s:%s(%d%%)" % (self.kind, self.name, self.percent) 
+	def __repr__(self):
+		return "Grade('%s', '%s', %d)" % (self.kind, self.name, self.percent) 
+	def __eq__(self, other):
+		return(self.kind==other.kind and self.name==other.name and self.percent==other.percent)
+class GradeBook: #entire group of grade values as a list 
+	def __init__(self):
+		self.grades = []
+	def __str__(self):
+		stri = 'GradeBook:\n'
+		for n in self.grades:
+			stri = stri + '\t' + str(n) + '\n'
+		return stri
+	def __repr__(self):
+		return str(self)
+	def add_grade(self, grade):
+		self.grades.append(grade)
+	def average_by_kind(self, kind):
+		list = []
+		count = 0 
+		for n in self.grades:
+			if n.kind == kind:
+				list.append(n.percent)
+			else:
+				ans = None
+		for k in list:
+			count+= 1
+			ans = sum(list) // count
+		return ans
+	def get_all_of(self, kind):
+		list2 = []
+		for n in self.grades:
+			if n.kind == kind:
+				list2.append(n)
+		return list2
+		
+	def get_by_name(self, name):
+		for n in self.grades:
+			ans = 0
+			if n.name == name:
+				return n 
+			else:
+				ans = None
+		if ans == None:
+			raise GradingError("no Grade found named '%s'" % (name))
+				
+class GradingError(Exception): #extends the notion of the exception
+	def __init__(self,msg):
+		self.msg = msg 
+	def __str__(self):
+		return self.msg 
+	def __repr__(self):	
+		return "GradingError('''%s''')" % (self.msg) 
+
+
+
