@@ -1,0 +1,74 @@
+import tensorflow as tf
+import pandas as pd
+import numpy as np 
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.model_selection import train_test_split
+
+df = pd.read_csv(CSV FILE NAME)
+scaler_model = MinMaxScaler() #type(scaler_model)
+scaler_model.fit(data) #model learns min and max value of the data
+scaler_model.transform(data) #using the model to transform the array
+mydata = np.random.randint(0,101,(50,4))
+df = pd.DataFrame(data=mydata, columns = ['f1','f2','f3','labels'])
+X = df[['f1','f2','f3']] #feature column names only
+X #removes the predicted labels, supervised learning problem 
+y = df[['labels']] #these are the predicted labels 
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state =101)
+
+X_train.shape #35 rows by 3, feature data for training set 
+#feature data = attribute that contributes to predicting the ability of a model
+X_test.shape #15 rows by 3 
+
+n1 =tf.constant(1)
+n2 = tf.constant(2)
+n3 = n1+n2
+
+with tf.Session() as sess:
+    result = sess.run(n3)
+    
+g=tf.Graph()
+graph_one = tf.get_default_graph()
+graph_two = tf.Graph()
+with graph_two.as_default(): 
+    print(graph_two is tf.get_default_graph())
+    
+sess = tf.InteractiveSession()
+my_tensor = tf.random_uniform((4,4),0,1) #shape 4,4.. min:0, max:1, float32 dtype
+my_var =tf.Variable(initial_value = my_tensor)
+init = tf.global_variables_initializer()
+sess.run(init) #how you can initialize variables 
+sess.run(my_var) #have to initialize, otherwise it goes uninitialized 
+ph = tf.placeholder(tf.float32, shape = (None, 5)) #need data type, shape is needed but theres a default
+
+#testing outputs
+np.random.seed(101)
+tf.set_random_seed(101)
+rand_a = np.random.uniform(0,100, (5,5))
+
+a = tf.placeholder(tf.float32)
+b = tf.placeholder(tf.float32)
+add_op = a+b
+mul_op = a * b
+with tf.Session() as sess: 
+    add_result = sess.run(add_op, feed_dict={a:rand_a,b:rand_b})
+    print(add_result)
+    
+    mult_result = sess.run(mul_op, feed_dict = {a:rand_a,b:random_b})
+    print(mult_result)
+n_features = 10
+n_dense_neurons = 3
+
+x = tf.placeholder(tf.float32, (None, n_features)) #receive array of number of samples as rows, and number of features as columns
+W = tf.Variable(tf.random_normal([n_features, n_dense_neurons])) #weights on neural network
+b = tf.Variable(tf.ones([n_dense_neurons])) #bias variable
+#operation and activation functions
+xW = tf.matmul(x,W)
+z = tf.add(xW,b)
+a = tf.sigmoid(z)
+init = tf.global_variables_initializer()
+with tf.Session() as sess:
+    sess.run(init)
+    layer_out = sess.run(a,feed_dict={x:np.random.random([1,n_features])}) 
+    #layers that result
+print(layer_out)
+
