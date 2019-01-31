@@ -1,0 +1,85 @@
+#-------------------------------------------------------------------------------
+# Name: Sofia Sikandar                                                                                                                        
+#-------------------------------------------------------------------------------
+# Honor Code Statement: I received no assistance on this assignment that
+# violates the ethical guidelines set forth by professor and class syllabus.
+#-------------------------------------------------------------------------------
+# References: Lecture slides, zybook 8, multiple office hour sessions.                                                                 
+#-------------------------------------------------------------------------------
+# Comments and assumptions: A note to the grader as to any problems or 
+# uncompleted aspects of the assignment, as well as any assumptions about the
+# meaning of the specification.
+#-------------------------------------------------------------------------------
+# NOTE: width of source code should be <= 80 characters to facilitate printing.
+#2345678901234567890123456789012345678901234567890123456789012345678901234567890
+#       10        20        30        40        50        60    70        80
+#------------------------------------------------------------------------------
+
+def rank3(x,y,z, ascending=True):
+	ranklist = [x, y, z] #asks for a list out of rank
+	if ascending == True: #if ascending is true, sort the list from smallest to largest
+		ranklist.sort()
+		return tuple(ranklist) #return the sorted list as a tuple
+	else:
+		ranklist.sort() #if ascending is false, sort the list from smallest to largest
+		ranklist.reverse() #reverse the order, takes it to largest to smallest
+		return tuple(ranklist) #returns this order as a tuple
+
+def remove(val, xs, limit=None): 
+	if limit==None or limit > len(xs): #if there is not a limit or if it larger than the length of the input
+		while val in xs: #runs through the list xs
+			xs.remove(val) #if val is in xs, remove val from xs. 
+		return xs #returns the modified list 
+	while limit!=None: #while there is not a limit 
+		if limit >= len(xs): #if the limit is larger/equal to the length of the list
+			limit = len(xs) #the limit is equal to the length of the list 
+			for i in range(limit): #runs through the values of the list
+				while val==xs[i]: #while val is equal to a value in xs
+					xs.remove(val) #remove that digit from the list 
+			return xs #returns the modified list
+		if limit < len(xs): #if the limit is less than the length of the length of xs
+			limit = limit #the limit is equal to the limit
+			for i in range(limit): #runs through the list 
+				while val==xs[i]: #while val is equal to a value in xs
+					xs.remove(val) #remove that value from xs
+			return xs #returns modified list
+			
+def filter_chars(msg, keeps=''):
+	str = '' #asks for a string
+	keeps = list(keeps) #creates a list out of the variable keeps
+	if keeps == [ ]: 
+		str+= 'hithere' #adds this string if keeps is a list
+	for i in range(len(msg)): #runs through the list msg
+		for j in range(len(keeps)): #runs through the list j 
+			if(keeps[j] in msg[i]): #if there are the same variables in both lists
+				str+=keeps[j] #add variable of keeps
+				break #exits loop
+	return str	
+
+
+def relocate_evens(data, new_home = None):
+	j = 0 #initialization for j
+	k = 0 #initialization for k 
+	vals = [ ] #creates a list out of vals
+	sanctuary = new_home #assigns value of sanctuary
+	length = len(data) #assigns value of length
+	if(sanctuary == None): #creates type of sanctuary if it is equal to None
+		sanctuary = []
+	while k < length: #if k is less than the len(data)
+		if data[j]%2==0: #if data is divisible by 2 
+			sanctuary.append(data[j])
+			data.remove(data[j])
+			length= len(data)
+		if length > 1:
+			if data[k]%2==0:
+				sanctuary.append(data[k])
+				data.remove(data[k])
+				length= len(data)
+		if data[j]%2==0:
+			sanctuary.append(data[j])
+			data.remove(data[j])
+			length= len(data)
+		k+=1
+	vals=data
+	return sanctuary
+		
