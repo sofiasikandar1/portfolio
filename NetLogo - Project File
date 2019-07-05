@@ -53,12 +53,6 @@
 ;     use of ITQs  where each fisher is assigned a specific portion
 ;     of the TAC.  Fishers may elect to fish  or may lease their
 ;     quota to other fishers instead.
-;
-; ======================================================================
-;
-; this model is developed in partial fulfillment for the requirements
-; of the Doctor of Philosophy degree in Computational Social Science
-; at George Mason University.
 ; ======================================================================
 ; version history:
 ; v11 : baseline model
