@@ -58,6 +58,7 @@ public class Building extends Tile {
 	
 	public int getPeople() {
 		return people;
+		System.out.println("Hi");
 	}
 
 	public void setPeople(int people) {
