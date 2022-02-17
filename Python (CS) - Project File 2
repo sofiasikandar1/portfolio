@@ -1,19 +1,3 @@
-#-------------------------------------------------------------------------------
-# Name: Sofia Sikandar                                                                                                                                                                                 
-#-------------------------------------------------------------------------------
-# Honor Code Statement: I received no assistance on this assignment that
-# violates the ethical guidelines set forth by professor and class syllabus.
-#-------------------------------------------------------------------------------
-# References: Lecture slides, zybook, multiple office hour sessions, collab. partners                                                                 
-#-------------------------------------------------------------------------------
-# Comments and assumptions: A note to the grader as to any problems or 
-# uncompleted aspects of the assignment, as well as any assumptions about the
-# meaning of the specification.
-#-------------------------------------------------------------------------------
-# NOTE: width of source code should be <= 80 characters to facilitate printing.
-#2345678901234567890123456789012345678901234567890123456789012345678901234567890
-#       10        20        30        40        50        60    70        80
-#------------------------------------------------------------------------------
 class Grade:
 	def __init__(self, kind, name, percent):   #represents a specific score on a specific kind of assessment 
 		self.kind = kind 
