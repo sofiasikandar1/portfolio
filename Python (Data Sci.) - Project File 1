@@ -1,5 +1,5 @@
 import os 
-os.chdir('/Users/sofiasikandar/CDS230/homework/movies')
+os.chdir('INSERT PATH HERE')
 # movies.py
 
 # ########### Loading Functions #################
