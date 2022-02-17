@@ -1,5 +1,5 @@
 #Question 1
-file ='/Users/sofiasikandar/CDS230/homework/hw4/dna.txt'
+file ='.*/dna.txt'
 import math
 def BothN(n):
     y = math.sqrt(n)
