@@ -38,7 +38,7 @@ print ('Q4 :', q4 )
 
 #Question5
 import os 
-fname = ('/Users/sofiasikandar/Desktop/cds230final/romeojuliet.txt')
+fname = ('.*/romeojuliet.txt')
 y = open(fname)
 x = y.read()
 lower = x.lower()
@@ -88,7 +88,7 @@ print('Q7: ', len(clist), clist[:5] )
 
 #Question8
 import numpy as np
-fname = ('/Users/sofiasikandar/Desktop/cds230final/numbers.txt')
+fname = ('.*/numbers.txt')
 y = open(fname).read()
 a = np.matrix(y)
 a1 = a.reshape(20,20)
